@@ -38,6 +38,9 @@ export interface StartupState {
 
 export interface ServerStatus {
   status: "running" | "stopping" | (string & {});
+  /** "mobile" when served by the embedded Android server (no desktop integrations). */
+  edition?: "desktop" | "mobile";
+  version?: string;
   instance_id: string;
   startup: StartupState;
   host: string;

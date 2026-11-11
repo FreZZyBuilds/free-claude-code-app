@@ -2,7 +2,7 @@ import { Command } from "cmdk";
 import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router";
 import { ExternalLink, RefreshCw, Server } from "lucide-react";
-import { useConfig, useRefreshModels } from "@/hooks/data";
+import { useConfig, useIsMobileServer, useRefreshModels } from "@/hooks/data";
 import { NAV } from "./Layout";
 import { ProviderLogo } from "./ProviderLogo";
 
@@ -10,6 +10,7 @@ export function CommandPalette({ open, onOpenChange }: { open: boolean; onOpenCh
   const navigate = useNavigate();
   const { data: config } = useConfig();
   const refresh = useRefreshModels();
+  const mobile = useIsMobileServer();
   const ref = useRef<HTMLDialogElement>(null);
 
   useEffect(() => {
@@ -47,7 +48,7 @@ export function CommandPalette({ open, onOpenChange }: { open: boolean; onOpenCh
           <Command.List className="scrollbar-thin max-h-[52vh] overflow-y-auto p-2">
             <Command.Empty className="px-3 py-8 text-center text-sm text-muted">No results.</Command.Empty>
             <Command.Group heading="Pages" className="text-xs text-faint [&_[cmdk-group-heading]]:px-3 [&_[cmdk-group-heading]]:py-1.5">
-              {NAV.map(({ to, label, icon: Icon }) => (
+              {NAV.filter((n) => !mobile || n.to !== "/integrations").map(({ to, label, icon: Icon }) => (
                 <Command.Item key={to} value={`page ${label}`} onSelect={() => go(to)} className={item}>
                   <Icon className="size-4" />
                   <span className="text-fg">{label}</span>
@@ -74,7 +75,7 @@ export function CommandPalette({ open, onOpenChange }: { open: boolean; onOpenCh
                 <Server className="size-4" />
                 <span className="text-fg">Add custom provider</span>
               </Command.Item>
-              <Command.Item
+              {!mobile && <Command.Item
                 value="open classic admin code sessions"
                 onSelect={() => {
                   onOpenChange(false);
@@ -84,7 +85,7 @@ export function CommandPalette({ open, onOpenChange }: { open: boolean; onOpenCh
               >
                 <ExternalLink className="size-4" />
                 <span className="text-fg">Open native Code sessions</span>
-              </Command.Item>
+              </Command.Item>}
             </Command.Group>
             {config && (
               <Command.Group heading="Providers" className="text-xs text-faint [&_[cmdk-group-heading]]:px-3 [&_[cmdk-group-heading]]:py-1.5">

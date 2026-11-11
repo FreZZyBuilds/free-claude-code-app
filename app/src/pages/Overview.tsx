@@ -1,7 +1,7 @@
 import { Link } from "react-router";
 import { AlertTriangle, ArrowUpRight, Laptop, RefreshCw, TerminalSquare } from "lucide-react";
 import { useQueries } from "@tanstack/react-query";
-import { displayHost, isReady, keys, providerTone, useConfig, useModels, useProviderLookup, useRefreshModels, useStatus } from "@/hooks/data";
+import { displayHost, isReady, keys, providerTone, useConfig, useIsMobileServer, useModels, useProviderLookup, useRefreshModels, useStatus } from "@/hooks/data";
 import { api, INTEGRATIONS } from "@/lib/api";
 import { HARNESSES, INTEGRATION_META, modelNameOf, providerOf, TIER_COLORS, TIERS } from "@/lib/catalog";
 import { ProviderLogo } from "@/components/ProviderLogo";
@@ -23,7 +23,7 @@ function SignalPath() {
         <Wire live={ready && !failing} />
         <Node
           icon={<img src="/favicon.svg" alt="" className="size-6" />}
-          title="fcc-server"
+          title={status.edition === "mobile" ? "Android server" : "fcc-server"}
           sub={`${displayHost(status.host)}:${status.port}`}
         />
         <Wire live={ready && !failing} />
@@ -150,10 +150,31 @@ function IntegrationsSummary() {
   );
 }
 
+function TermuxPanel({ port }: { port: number }) {
+  const cmd = `export ANTHROPIC_BASE_URL=http://127.0.0.1:${port}\nexport ANTHROPIC_AUTH_TOKEN=fcc\nclaude`;
+  return (
+    <Panel className="p-5">
+      <div className="mb-3 flex items-center gap-2">
+        <TerminalSquare className="size-4.5 text-muted" />
+        <h2 className="font-semibold">Use Claude Code on this phone</h2>
+      </div>
+      <p className="mb-3 max-w-2xl text-sm text-muted">
+        Install Claude Code in Termux (<code className="font-mono text-[13px]">pkg install nodejs</code>, then{" "}
+        <code className="font-mono text-[13px]">npm i -g @anthropic-ai/claude-code</code>) and start it with:
+      </p>
+      <div className="flex items-start gap-2 rounded-control border border-line bg-raised p-3">
+        <pre className="min-w-0 flex-1 overflow-x-auto font-mono text-[13px] whitespace-pre">{cmd}</pre>
+        <CopyButton value={cmd} label="Copy commands" />
+      </div>
+    </Panel>
+  );
+}
+
 export function OverviewPage() {
   const { data: status } = useStatus();
   const { data: models } = useModels();
   const refresh = useRefreshModels();
+  const mobile = useIsMobileServer();
   const ready = status?.provider_status.filter(isReady) ?? [];
   const total = status?.provider_status.length ?? 0;
   const pending = status?.pending_fields ?? [];
@@ -187,7 +208,11 @@ export function OverviewPage() {
       <div className="grid gap-4 sm:grid-cols-3">
         <Stat value={`${ready.length}/${total}`} label="Providers ready" to="/providers" />
         <Stat value={models?.models.length ?? "–"} label="Models in catalog" to="/routing" />
-        <Stat value={HARNESSES.length + 1} label="Supported coding agents" to="/integrations" />
+        {mobile ? (
+          <Stat value={status?.port ?? "–"} label="Local port for Claude Code" to="/playground" />
+        ) : (
+          <Stat value={HARNESSES.length + 1} label="Supported coding agents" to="/integrations" />
+        )}
       </div>
 
       <div className="grid gap-6 lg:grid-cols-[1.25fr_1fr]">
@@ -225,6 +250,7 @@ export function OverviewPage() {
         </Panel>
       </div>
 
+      {mobile ? <TermuxPanel port={status?.port ?? 8082} /> : (
       <div className="grid gap-6 lg:grid-cols-[1.25fr_1fr]">
         <Panel className="p-5">
           <div className="mb-3 flex items-center gap-2">
@@ -253,6 +279,7 @@ export function OverviewPage() {
           <IntegrationsSummary />
         </Panel>
       </div>
+      )}
     </div>
   );
 }

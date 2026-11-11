@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Brain, ChevronDown, Eraser, KeyRound, SendHorizontal, Settings2, Square } from "lucide-react";
-import { useConfig, useStatus } from "@/hooks/data";
+import { useConfig, useModels, useStatus } from "@/hooks/data";
 import { TIER_COLORS, TIERS } from "@/lib/catalog";
 import { Markdown } from "@/lib/markdown";
 import { readPref, writePref } from "@/lib/prefs";
@@ -237,7 +237,8 @@ export function PlaygroundPage() {
                 void send();
               }
             }}
-            placeholder="Ask something… (Shift+Enter for a new line)"
+            placeholder="Ask something…"
+            title="Enter sends, Shift+Enter adds a line"
             className={cx(inputClass, "max-h-48 min-h-10 resize-none py-2 [field-sizing:content]")}
           />
           {streaming ? (
@@ -257,6 +258,7 @@ export function PlaygroundPage() {
 
 function Message({ turn }: { turn: Turn }) {
   const [open, setOpen] = useState(false);
+  const { data: models } = useModels();
   if (turn.role === "user") {
     return (
       <div className="flex justify-end">
@@ -301,7 +303,7 @@ function Message({ turn }: { turn: Turn }) {
       )}
       {!turn.streaming && !turn.error && (
         <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1 font-mono text-[11px] text-faint">
-          {m.routed ? <span title={m.model}>→ {m.routed}</span> : m.model && <span>{m.model}</span>}
+          {m.routed ? <span title={m.routed}>→ {models?.model_labels[m.routed] ?? m.routed}</span> : m.model && <span>{m.model}</span>}
           {m.ttft != null && <span>first token {(m.ttft / 1000).toFixed(2)}s</span>}
           {out != null && <span>{out} tokens out</span>}
           {out && genMs && genMs > 50 ? <span>{((out / genMs) * 1000).toFixed(0)} tok/s</span> : null}

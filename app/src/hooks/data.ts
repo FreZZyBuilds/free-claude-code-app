@@ -146,3 +146,9 @@ export function useProviderLookup() {
 }
 
 export const displayHost = (host: string) => (host === "0.0.0.0" || host === "::" ? "127.0.0.1" : host);
+
+/** True when Studio runs inside the Android app against its embedded server. */
+export function useIsMobileServer() {
+  const { data } = useStatus();
+  return data?.edition === "mobile";
+}

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Plain HTTP is needed for the local server (127.0.0.1) and for self-hosted models
+     on the local network (Ollama, llama.cpp, LM Studio). Remote providers use HTTPS. -->
+<network-security-config>
+    <base-config cleartextTrafficPermitted="true">
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
+</network-security-config>

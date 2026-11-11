@@ -1,0 +1,44 @@
+name: Android APK
+
+on:
+  push:
+    paths: ["android/**", "app/**", ".github/workflows/android.yml"]
+  pull_request:
+    paths: ["android/**", "app/**", ".github/workflows/android.yml"]
+  workflow_dispatch:
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: app/package-lock.json
+      - name: Build Studio web UI (bundled into the APK)
+        working-directory: app
+        run: npm ci && npm run build
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+      - uses: android-actions/setup-android@v3
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Test, lint and build
+        working-directory: android
+        env:
+          FCC_KEYSTORE: ${{ secrets.FCC_KEYSTORE_BASE64 != '' && 'release.jks' || '' }}
+          FCC_KEYSTORE_PASSWORD: ${{ secrets.FCC_KEYSTORE_PASSWORD }}
+          FCC_KEY_ALIAS: ${{ secrets.FCC_KEY_ALIAS }}
+          FCC_KEY_PASSWORD: ${{ secrets.FCC_KEY_PASSWORD }}
+        run: |
+          if [ -n "${{ secrets.FCC_KEYSTORE_BASE64 }}" ]; then echo "${{ secrets.FCC_KEYSTORE_BASE64 }}" | base64 -d > app/release.jks; else unset FCC_KEYSTORE; fi
+          ./gradlew :core:test :app:lintDebug :app:assembleDebug :app:assembleRelease
+      - uses: actions/upload-artifact@v4
+        with:
+          name: fcc-studio-apk
+          path: |
+            android/app/build/outputs/apk/release/app-release.apk
+            android/app/build/outputs/apk/debug/app-debug.apk

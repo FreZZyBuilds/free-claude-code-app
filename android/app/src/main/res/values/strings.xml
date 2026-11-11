@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">FCC Studio</string>
+    <string name="notif_channel">Server</string>
+    <string name="notif_running">Server läuft auf 127.0.0.1:%1$d</string>
+    <string name="notif_text">Coding-Agents auf diesem Gerät können sich jetzt verbinden.</string>
+    <string name="notif_stop">Stoppen</string>
+</resources>

@@ -52,6 +52,36 @@ Erste Schritte in der App:
 3. **Playground**: Nachricht senden und prüfen, ob die Antwort durchkommt.
 4. Im Terminal `fcc-claude` (oder `fcc-codex`, `fcc-opencode` …) starten.
 
+## Android-App
+
+`android/` enthält eine native Android-App mit eigenem Server. Auf **Play** tippen, und der Server läuft direkt
+auf dem Handy unter `http://127.0.0.1:8082`, auch im Hintergrund (Benachrichtigung mit *Stoppen*). Über
+*Studio öffnen* erscheint dieselbe Studio-Oberfläche wie am PC.
+
+- **Server in der App:** Der Original-FCC-Server braucht Python 3.14 mit nativen Bibliotheken und läuft nicht in
+  einer Android-App. Die App enthält deshalb einen eigenen Kotlin-Server (`android/core`) mit der Kernfunktion von
+  FCC: Claude-Code-Anfragen (Anthropic Messages API) an 56 Provider weiterleiten, mit Streaming, Tool-Calls,
+  Thinking, Tier-Routing (Fable/Opus/Sonnet/Haiku), Key-Rotation bei Rate-Limits und Fallback-Kette. Er spricht
+  dieselbe Admin-API, deshalb läuft Studio unverändert.
+- **Nur am PC:** Account-Logins (ChatGPT, Copilot), Azure, Vertex, Cloudflare sowie die Desktop-Integrationen.
+- **Claude Code auf dem Handy:** In [Termux](https://termux.dev) `pkg install nodejs`,
+  `npm i -g @anthropic-ai/claude-code`, dann
+  `ANTHROPIC_BASE_URL=http://127.0.0.1:8082 ANTHROPIC_AUTH_TOKEN=fcc claude`.
+- **Berechtigungen:** Internet, Vordergrund-Dienst (`specialUse`), Wake-Lock, Benachrichtigungen (Android 13+
+  fragt beim ersten Play). API-Keys bleiben im privaten App-Speicher und sind von Backups ausgeschlossen.
+
+APK bauen (Node 20+, JDK 17+, Android SDK mit Platform 36):
+
+```bash
+cd app && npm ci && npm run build      # Studio-Oberfläche, wird in die APK gepackt
+cd ../android && ./gradlew assembleRelease
+# → android/app/build/outputs/apk/release/app-release.apk
+```
+
+Der Server-Kern läuft zum Testen auch am PC: `./gradlew :core:run --args="../../app/dist"`. Die GitHub Action
+`Android APK` baut Debug- und Release-APK als Download. Für eine Play-Store-Signatur die Secrets
+`FCC_KEYSTORE_BASE64`, `FCC_KEYSTORE_PASSWORD`, `FCC_KEY_ALIAS` und `FCC_KEY_PASSWORD` setzen.
+
 ## Entwicklung
 
 ```bash
@@ -84,6 +114,7 @@ app/            React 19 · TypeScript · Vite 8 · Tailwind CSS 4 · TanStack Q
   src/pages/    Overview, Providers, Routing, Playground, Integrations, Settings
   server.mjs    Produktionsserver + lokaler Proxy
   e2e/          Playwright-Tests
+android/        Android-App: core/ (Kotlin-Server, Ktor) + app/ (Play-Bildschirm, Dienst, WebView)
 server/         Free Claude Code (Git-Submodul, unverändert)
 scripts/        start.sh / start.ps1
 .claude/skills/ Kuratierte Claude-Code-Skills von aitmpl.com

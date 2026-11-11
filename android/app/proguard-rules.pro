@@ -1,0 +1,15 @@
+# Ktor / kotlinx.serialization / OkHttp keep rules for the embedded server.
+-keep class io.ktor.** { *; }
+-keep class kotlinx.coroutines.** { *; }
+-keepclassmembers class dev.fcc.core.** { *; }
+-keep,includedescriptorclasses class dev.fcc.core.**$$serializer { *; }
+-keepattributes *Annotation*, InnerClasses, Signature, EnclosingMethod
+-dontwarn org.slf4j.**
+-dontwarn io.ktor.**
+-dontwarn org.conscrypt.**
+-dontwarn org.bouncycastle.**
+-dontwarn org.openjsse.**
+-dontwarn java.lang.management.**
+-dontwarn javax.management.**
+-dontwarn reactor.blockhound.**
+-keep class kotlinx.serialization.** { *; }

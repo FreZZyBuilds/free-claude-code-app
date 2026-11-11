@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<lint>
+    <!-- Adaptive icons must stay in mipmap-anydpi-v26 for aapt2. -->
+    <issue id="ObsoleteSdkInt" severity="ignore" />
+    <!-- Intentional: plain HTTP to 127.0.0.1 and self-hosted models on the LAN. -->
+    <issue id="InsecureBaseConfiguration" severity="ignore" />
+</lint>

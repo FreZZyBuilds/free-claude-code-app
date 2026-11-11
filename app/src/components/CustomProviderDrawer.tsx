@@ -134,7 +134,7 @@ function Body({ existing, onDone }: { existing?: CustomProvider; onDone: () => v
         </FieldShell>
         <FieldShell label="API format" htmlFor="cp-format" description={FORMATS.find((f) => f.value === format)?.hint}>
           <Select id="cp-format" value={format} onChange={(e) => setFormat(e.target.value as ApiFormat)}>
-            {FORMATS.map((f) => (
+            {FORMATS.filter((f) => !config?.custom_reasoning_formats || f.value in config.custom_reasoning_formats).map((f) => (
               <option key={f.value} value={f.value}>
                 {f.label}
               </option>

@@ -14,7 +14,7 @@ import {
   Sun,
   X,
 } from "lucide-react";
-import { useStatus } from "@/hooks/data";
+import { useIsMobileServer, useStatus } from "@/hooks/data";
 import { applyTheme, currentTheme, type Theme } from "@/lib/prefs";
 import { CommandPalette } from "./CommandPalette";
 import { ServerOffline } from "./ServerOffline";
@@ -67,7 +67,7 @@ function ServerBadge() {
     <div className="flex min-w-0 items-center gap-2 text-[13px]">
       <StatusDot tone={ok ? "ok" : "error"} live={ok} />
       <span className="truncate text-muted">
-        {ok ? `fcc-server · :${data!.port}` : "Server offline"}
+        {ok ? `${data!.edition === "mobile" ? "Android server" : "fcc-server"} · :${data!.port}` : "Server offline"}
       </span>
     </div>
   );
@@ -78,6 +78,8 @@ export function Layout() {
   const [navOpen, setNavOpen] = useState(false);
   const { error, data, isLoading } = useStatus();
   const location = useLocation();
+  const mobile = useIsMobileServer();
+  const nav = mobile ? NAV.filter((n) => n.to !== "/integrations") : NAV;
 
   useEffect(() => setNavOpen(false), [location.pathname]);
   useEffect(() => {
@@ -116,7 +118,7 @@ export function Layout() {
           <Kbd>⌘K</Kbd>
         </button>
         <nav className="mt-4 flex flex-col gap-0.5" aria-label="Main">
-          {NAV.map(({ to, label, icon: Icon, ...rest }) => (
+          {nav.map(({ to, label, icon: Icon, ...rest }) => (
             <NavLink
               key={to}
               to={to}
@@ -158,6 +160,10 @@ export function Layout() {
         <main className="scrollbar-thin flex-1 overflow-y-auto">
           {offline ? (
             <ServerOffline />
+          ) : !data ? (
+            <div className="flex h-full items-center justify-center">
+              <Spinner />
+            </div>
           ) : (
             <div className="mx-auto w-full max-w-[1180px] px-4 py-6 sm:px-8 sm:py-9">
               <Suspense fallback={<Spinner />}>
