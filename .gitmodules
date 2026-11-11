@@ -1,0 +1,3 @@
+[submodule "server"]
+	path = server
+	url = https://github.com/Alishahryar1/free-claude-code.git

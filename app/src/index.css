@@ -1,0 +1,150 @@
+@import "tailwindcss";
+@import "@fontsource-variable/instrument-sans";
+@import "@fontsource-variable/jetbrains-mono";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/*
+  FCC Studio tokens — "patch bay" palette.
+  ink    #172033  text / dark surfaces
+  mist   #F3F5F9  light canvas
+  cobalt #3651F5  routing, primary actions
+  amber  #E8A23A  signal: attention, pending restart
+  go     #18A07E  healthy
+  stop   #E0474C  failing
+*/
+@theme {
+  --font-sans: "Instrument Sans Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono Variable", ui-monospace, SFMono-Regular, monospace;
+
+  --color-cobalt-50: #eef1ff;
+  --color-cobalt-100: #dfe4ff;
+  --color-cobalt-200: #c3cbff;
+  --color-cobalt-300: #9aa7ff;
+  --color-cobalt-400: #6f7cfb;
+  --color-cobalt-500: #3651f5;
+  --color-cobalt-600: #2a3fdb;
+  --color-cobalt-700: #2333b1;
+  --color-amber-signal: #e8a23a;
+  --color-go: #18a07e;
+  --color-stop: #e0474c;
+
+  --color-canvas: var(--c-canvas);
+  --color-surface: var(--c-surface);
+  --color-raised: var(--c-raised);
+  --color-line: var(--c-line);
+  --color-line-strong: var(--c-line-strong);
+  --color-fg: var(--c-fg);
+  --color-muted: var(--c-muted);
+  --color-faint: var(--c-faint);
+  --color-accent: var(--c-accent);
+  --color-accent-soft: var(--c-accent-soft);
+
+  --radius-panel: 14px;
+  --radius-control: 9px;
+}
+
+:root {
+  --c-canvas: #f3f5f9;
+  --c-surface: #ffffff;
+  --c-raised: #f8f9fc;
+  --c-line: #e1e5ee;
+  --c-line-strong: #c9cfdc;
+  --c-fg: #172033;
+  --c-muted: #56607a;
+  --c-faint: #8a93a8;
+  --c-accent: #3651f5;
+  --c-accent-soft: #eef1ff;
+  color-scheme: light;
+}
+
+.dark {
+  --c-canvas: #0e1524;
+  --c-surface: #141c2e;
+  --c-raised: #1a2337;
+  --c-line: #253049;
+  --c-line-strong: #34405c;
+  --c-fg: #e8ecf5;
+  --c-muted: #a3adc4;
+  --c-faint: #6e7892;
+  --c-accent: #7a88ff;
+  --c-accent-soft: #1d2650;
+  color-scheme: dark;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  background: var(--c-canvas);
+  color: var(--c-fg);
+  font-family: var(--font-sans);
+  font-feature-settings: "ss01", "cv11";
+  -webkit-font-smoothing: antialiased;
+}
+
+:focus-visible {
+  outline: 2px solid var(--c-accent);
+  outline-offset: 2px;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--c-accent) 28%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@keyframes pulse-ring {
+  0% { box-shadow: 0 0 0 0 color-mix(in srgb, currentColor 45%, transparent); }
+  80%, 100% { box-shadow: 0 0 0 6px transparent; }
+}
+
+@keyframes cable-flow {
+  to { stroke-dashoffset: -24; }
+}
+
+.cable-live {
+  stroke-dasharray: 6 6;
+  animation: cable-flow 1.2s linear infinite;
+}
+
+.scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: var(--c-line-strong) transparent;
+}
+
+/* Rendered model output */
+.prose-chat p { margin: 0 0 0.65em; }
+.prose-chat p:last-child { margin-bottom: 0; }
+.prose-chat pre {
+  background: var(--c-raised);
+  border: 1px solid var(--c-line);
+  border-radius: 9px;
+  padding: 0.75em 0.9em;
+  overflow-x: auto;
+  font-family: var(--font-mono);
+  font-size: 0.82em;
+  margin: 0.5em 0 0.75em;
+}
+.prose-chat code { font-family: var(--font-mono); font-size: 0.88em; }
+.prose-chat :not(pre) > code {
+  background: var(--c-raised);
+  border: 1px solid var(--c-line);
+  border-radius: 5px;
+  padding: 0.05em 0.35em;
+}
+.prose-chat ul, .prose-chat ol { padding-left: 1.3em; margin: 0.3em 0 0.7em; }
+.prose-chat ul { list-style: disc; }
+.prose-chat ol { list-style: decimal; }
+.prose-chat a { color: var(--c-accent); text-decoration: underline; }
+.prose-chat h1, .prose-chat h2, .prose-chat h3 { font-weight: 650; margin: 0.8em 0 0.35em; }
